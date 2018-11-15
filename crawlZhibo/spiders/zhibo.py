@@ -2,8 +2,11 @@
 import scrapy
 import requests
 import json
+import time
 
 MATCH_URL = 'http://localhost:2005/api/v1/service/matches'
+SLEEP_TIME = 60
+
 class ZhiboSpider(scrapy.Spider):
     name = 'zhibo'
     allowed_domains = ['zhibo8.cc']
@@ -46,7 +49,7 @@ class ZhiboSpider(scrapy.Spider):
                     if not img:
                         img = t.xpath('b/img/@src').extract()
                     # self.log('img is %s' % (str(img)))  
-                    payload  = {
+                    payload = {
                         'title': 'NBA常规赛 ' + who[0] + ' vs ' + who[1],
                         'eventId': eventId,
                         'category': 'nba',
@@ -56,62 +59,68 @@ class ZhiboSpider(scrapy.Spider):
                         'name2': who[1],
                         'img2': img[1]
                         }
-                    request = scrapy.Request( MATCH_URL, method='POST', 
-                        dont_filter=True,
-                        body=json.dumps(payload), 
-                        headers={'Content-Type':'application/json'},
-                        callback= self.parse_post
-                    )  
-                    self.log('request.body is %s' % request)
-                    yield request 
+                    ret = requests.post(MATCH_URL, data = payload) 
+                    json = ret.json()
+                    print(json)     
+                    if json and json['sleep']:
+                        time.sleep(json['sleep'])
+                    # request = scrapy.Request( MATCH_URL, method='POST', 
+                    #     dont_filter=True,
+                    #     body=json.dumps(payload), 
+                    #     headers={'Content-Type':'application/json'},
+                    #     callback= self.parse_post
+                    # )  
+                    # self.log('request.body is %s' % request)
+                    # yield request 
                     # self.log('who is %s, %s, %s' % (who[1], who[2], who[3] ))    
                         
-                if text.find('英超第')>=0:
-                    # self.log('title is %s' % text)
-                    eventId = t.xpath('@id').extract()[0]
-                    eventId = eventId.replace('saishi', '')
-                    self.log('eventId is %s' % eventId) 
-                    d = t.xpath('@data-time').extract()
-                    self.log('date is %s' % d)   
+                # if text.find('英超第')>=0:
+                #     # self.log('title is %s' % text)
+                #     eventId = t.xpath('@id').extract()[0]
+                #     eventId = eventId.replace('saishi', '')
+                #     self.log('eventId is %s' % eventId) 
+                #     d = t.xpath('@data-time').extract()
+                #     self.log('date is %s' % d)   
 
-                    who = t.xpath('text()').extract()
-                    who = self.filterSpace(who)
+                #     who = t.xpath('text()').extract()
+                #     who = self.filterSpace(who)
 
-                    if len(who) < 2:
-                        who = t.xpath('b/text()').extract()
-                        who = self.filterSpace(who)
-                        title = who[0].split(' ')[0]
-                        who[0] = who[0].split(' ')[1]
-                        # self.log('who(b) is %s' % (str(who))) 
-                    else: 
-                        if len(who) > 2:
-                            del who[0]
-                        title = t.xpath('b/text()').extract()[0]
-                    self.log('title is %s' % (title))  
-                    self.log('who is %s' % (str(who)))  
+                #     if len(who) < 2:
+                #         who = t.xpath('b/text()').extract()
+                #         who = self.filterSpace(who)
+                #         title = who[0].split(' ')[0]
+                #         who[0] = who[0].split(' ')[1]
+                #         # self.log('who(b) is %s' % (str(who))) 
+                #     else: 
+                #         if len(who) > 2:
+                #             del who[0]
+                #         title = t.xpath('b/text()').extract()[0]
+                #     self.log('title is %s' % (title))  
+                #     self.log('who is %s' % (str(who)))  
                     
-                    img = t.xpath('img/@src').extract()
-                    if not img:
-                        img = t.xpath('b/img/@src').extract()
-                    self.log('img is %s' % (str(img)))  
-                    payload  = {
-                        'title': title +' '+ who[0] + ' vs ' + who[1],
-                        'eventId': eventId,
-                        'category': 'yingchao',
-                        'time': d,
-                        'name1': who[0],
-                        'img1': img[0],
-                        'name2': who[1],
-                        'img2': img[1]
-                        }
-                    request = scrapy.Request( MATCH_URL, method='POST', 
-                        dont_filter=True,
-                        body=json.dumps(payload), 
-                        headers={'Content-Type':'application/json'},
-                        callback= self.parse_post
-                    )  
-                    self.log('request.body is %s' % request)
-                    yield request
+                #     img = t.xpath('img/@src').extract()
+                #     if not img:
+                #         img = t.xpath('b/img/@src').extract()
+                #     self.log('img is %s' % (str(img)))  
+                #     payload  = {
+                #         'title': title +' '+ who[0] + ' vs ' + who[1],
+                #         'eventId': eventId,
+                #         'category': 'yingchao',
+                #         'time': d,
+                #         'name1': who[0],
+                #         'img1': img[0],
+                #         'name2': who[1],
+                #         'img2': img[1]
+                #         }
+                    # request = scrapy.Request( MATCH_URL, method='POST', 
+                    #     dont_filter=True,
+                    #     body=json.dumps(payload), 
+                    #     headers={'Content-Type':'application/json'},
+                    #     callback= self.parse_post
+                    # )  
+                    # self.log('request.body is %s' % request)
+                    # yield request
+
                 # if text.find('CBA常规赛')>=0:
                 #     self.log('title is %s' % text)
                 #     d = t.xpath('@data-time').extract()

@@ -9,7 +9,7 @@ request
 }
 ```
 
-response 
+response
 
 ```js
 [
