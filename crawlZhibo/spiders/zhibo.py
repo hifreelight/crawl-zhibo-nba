@@ -28,7 +28,7 @@ class ZhiboSpider(scrapy.Spider):
             textSelector = content.xpath('ul/li')
             for t in textSelector:
                 text = t.extract().encode('utf-8')
-                if text.find('NBA常规赛')>=0:
+                if text.find('NBA常规赛'.encode('utf-8'))>=0:
                     # self.log('title is %s' % text)
                     eventId = t.xpath('@id').extract()[0]
                     eventId = eventId.replace('saishi', '')
