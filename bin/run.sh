@@ -1,0 +1,1 @@
+0 03 * * * docker run zhibo > /tmp/zhibo.log 2>&1

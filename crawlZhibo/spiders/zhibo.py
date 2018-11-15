@@ -7,7 +7,8 @@ import time
 # reload(sys)
 # sys.setdefaultencoding('utf-8')
 
-MATCH_URL = 'http://localhost:2005/api/v1/service/matches'
+# MATCH_URL = 'http://localhost:2005/api/v1/service/matches'
+MATCH_URL = 'http://api.bet.town/api/v1/service/matches'
 SLEEP_TIME = 60
 
 class ZhiboSpider(scrapy.Spider):
@@ -27,8 +28,8 @@ class ZhiboSpider(scrapy.Spider):
             content = box.xpath('div[@class="content"]')
             textSelector = content.xpath('ul/li')
             for t in textSelector:
-                text = t.extract().encode('utf-8')
-                if text.find('NBA常规赛'.encode('utf-8'))>=0:
+                text = t.extract()
+                if text.find('NBA常规赛')>=0:
                     # self.log('title is %s' % text)
                     eventId = t.xpath('@id').extract()[0]
                     eventId = eventId.replace('saishi', '')
