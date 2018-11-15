@@ -1,5 +1,6 @@
 ```
 scrapy crawl zhibo
+docker run -it zhibo bash
 ```
 
 request

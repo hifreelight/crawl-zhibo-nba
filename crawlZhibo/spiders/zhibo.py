@@ -14,7 +14,7 @@ SLEEP_TIME = 60
 class ZhiboSpider(scrapy.Spider):
     name = 'zhibo'
     allowed_domains = ['zhibo8.cc']
-    start_urls = ['http://zhibo8.cc/']
+    start_urls = ['http://www.zhibo8.cc/']
 
     def parse(self, response):
         page = response.url.split("/")[-2]
