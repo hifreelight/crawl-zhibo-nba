@@ -7,8 +7,8 @@ import time
 # reload(sys)
 # sys.setdefaultencoding('utf-8')
 
-# MATCH_URL = 'http://localhost:2005/api/v1/service/matches'
-MATCH_URL = 'http://api.bet.town/api/v1/service/matches'
+MATCH_URL = 'http://localhost:2005/api/v1/service/matches'
+# MATCH_URL = 'http://api.bet.town/api/v1/service/matches'
 SLEEP_TIME = 60
 
 class ZhiboSpider(scrapy.Spider):
@@ -29,7 +29,7 @@ class ZhiboSpider(scrapy.Spider):
             textSelector = content.xpath('ul/li')
             for t in textSelector:
                 text = t.extract()
-                if text.find('NBA常规赛')>=0:
+                if text.find('NBA常规赛')>=0 or text.find('NBA圣诞大战')>=0 :
                     # self.log('title is %s' % text)
                     eventId = t.xpath('@id').extract()[0]
                     eventId = eventId.replace('saishi', '')
@@ -43,7 +43,7 @@ class ZhiboSpider(scrapy.Spider):
                     if len(who) < 2:
                         who = t.xpath('b/text()').extract()
                         who = self.filterSpace(who)
-                        # self.log('who(b) is %s' % (str(who))) 
+                        self.log('who(b) is %s' % (str(who))) 
                     else: 
                         if len(who) > 2:
                             del who[0]
@@ -63,6 +63,7 @@ class ZhiboSpider(scrapy.Spider):
                         'name2': who[1],
                         'img2': img[1]
                         }
+                    self.log('payload is %s' % (str(payload)))      
                     ret = requests.post(MATCH_URL, data = payload) 
                     json = ret.json()
                     print(json)     
@@ -135,6 +136,7 @@ class ZhiboSpider(scrapy.Spider):
         ret = []
         for d in data:
             d = d.replace('NBA常规赛', '')
+            d = d.replace('NBA圣诞大战', '')
             d = d.strip()
             if d:
                 ret.append(d)
